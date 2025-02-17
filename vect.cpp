@@ -16,6 +16,9 @@ public:
         m_data = new T[m_capacity];
         memcpy(m_data, arr, size*sizeof(T));
         m_arr_size = size;
+        #ifdef DEBUG_VCTR
+        std::cout << "constructor\n";
+        #endif
     }
     Vctr(){
         m_data = new T [m_capacity];
@@ -23,6 +26,9 @@ public:
     ~Vctr(){
         m_data = nullptr;
         delete[] m_data;
+        #ifdef DEBUG_VCTR
+        std::cout << "destructor\n";
+        #endif
     }
     //in theory it is fast operation
     void add_elem(T e){
@@ -53,6 +59,15 @@ public:
         return m_data[index];
     }
 
+    void operator=(Vctr v){
+        m_data = nullptr;
+        delete[] m_data;
+        m_data = new T[v.get_size()];
+        m_data = v.get();
+        m_arr_size = v.get_size();
+        m_capacity = m_arr_size;
+    }
+
     T* get(){
         return m_data;
     }
@@ -74,7 +89,9 @@ private:
 
     void resize(){
         m_capacity *= 2;
+        #ifdef DEBUG_VCTR
         std::cout << "resizing, capacity = " << m_capacity << "\n";
+        #endif
         T* new_data = new T [m_capacity];
         memcpy(new_data, m_data, m_capacity*sizeof(T));
         m_data = nullptr;
@@ -106,7 +123,18 @@ public:
             std::cout << "second failed\n";
         }
     }
-
+    void thrd_test(){
+        Vctr<int> v2;
+        v2.add_elem(21);
+        v2.add_elem(546);
+        v = v2;
+        if(v[0] == 21 && v[1] == 546){
+            std::cout << "third pass\n";
+        }
+        else{
+            std::cout << "third failed\n";
+        }
+    }
 private:
     int x[5] = {1,2,3,4,5};
     Vctr<int> v = {x, 5};
@@ -116,4 +144,5 @@ int main(){
     Unit_tests tests;
     tests.frst_test();
     tests.scnd_test();
+    tests.thrd_test();
 }
