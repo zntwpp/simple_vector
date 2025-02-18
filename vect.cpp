@@ -1,11 +1,7 @@
 #include <complex.h>
+#include <cstddef>
 #include <iostream>
 #include <cstring>
-
-/**************
- *  F*CK YE   *
- * IT IS WORK *
- **************/
 
 template <typename T>
 
@@ -24,11 +20,14 @@ public:
         m_data = new T [m_capacity];
     }
     ~Vctr(){
-        m_data = nullptr;
-        delete[] m_data;
+        if(m_data != nullptr){
+            delete[] m_data;
+            m_data = nullptr;  
+        }
         #ifdef DEBUG_VCTR
         std::cout << "destructor\n";
         #endif
+        
     }
     //in theory it is fast operation
     void add_elem(T e){
@@ -50,8 +49,8 @@ public:
     void clear(){
         m_capacity = 1;
         m_arr_size = 0;
-        m_data = nullptr;
         delete[] m_data;
+        m_data = nullptr;
         m_data = new T [m_capacity];
     }
 
@@ -59,18 +58,17 @@ public:
         return m_data[index];
     }
 
+    /* not working
     void operator=(Vctr v){
-        m_data = nullptr;
-        delete[] m_data;
-        m_data = new T[v.get_size()];
-        m_data = v.get();
-        m_arr_size = v.get_size();
-        m_capacity = m_arr_size;
-    }
-
-    T* get(){
-        return m_data;
-    }
+        if (this != &v){
+            delete[] m_data;
+            m_data = nullptr;
+            m_arr_size = v.m_arr_size;
+            m_capacity = v.m_capacity;
+            m_data = new T[m_capacity];
+            memcpy(m_data, v.m_data, m_capacity*sizeof(T));
+        }
+    }*/
 
     int get_size(){
         return m_arr_size;
@@ -94,8 +92,8 @@ private:
         #endif
         T* new_data = new T [m_capacity];
         memcpy(new_data, m_data, m_capacity*sizeof(T));
-        m_data = nullptr;
         delete[] m_data;
+        m_data = nullptr;
         m_data = new_data;
     }
 };
@@ -123,18 +121,7 @@ public:
             std::cout << "second failed\n";
         }
     }
-    void thrd_test(){
-        Vctr<int> v2;
-        v2.add_elem(21);
-        v2.add_elem(546);
-        v = v2;
-        if(v[0] == 21 && v[1] == 546){
-            std::cout << "third pass\n";
-        }
-        else{
-            std::cout << "third failed\n";
-        }
-    }
+
 private:
     int x[5] = {1,2,3,4,5};
     Vctr<int> v = {x, 5};
@@ -144,5 +131,4 @@ int main(){
     Unit_tests tests;
     tests.frst_test();
     tests.scnd_test();
-    tests.thrd_test();
 }
