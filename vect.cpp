@@ -3,6 +3,8 @@
 #include <iostream>
 #include <cstring>
 
+//#define DEBUG_VCTR
+
 template <typename T>
 
 class Vctr{
@@ -18,16 +20,18 @@ public:
     }
     Vctr(){
         m_data = new T [m_capacity];
+        #ifdef DEBUG_VCTR
+        std::cout << "constructor\n";
+        #endif
     }
     ~Vctr(){
-        if(m_data != nullptr){
-            delete[] m_data;
-            m_data = nullptr;  
-        }
+        delete[] m_data;
+        m_data = nullptr;  
+            
         #ifdef DEBUG_VCTR
         std::cout << "destructor\n";
-        #endif
-        
+        #endif   
+
     }
     //in theory it is fast operation
     void add_elem(T e){
@@ -58,8 +62,7 @@ public:
         return m_data[index];
     }
 
-    /* not working
-    void operator=(Vctr v){
+    void operator=(const Vctr& v){
         if (this != &v){
             delete[] m_data;
             m_data = nullptr;
@@ -68,7 +71,11 @@ public:
             m_data = new T[m_capacity];
             memcpy(m_data, v.m_data, m_capacity*sizeof(T));
         }
-    }*/
+    }
+
+    T get(){
+        return *m_data;
+    }
 
     int get_size(){
         return m_arr_size;
@@ -121,6 +128,16 @@ public:
             std::cout << "second failed\n";
         }
     }
+    void thrd_test(){
+        Vctr<int> v2;
+        v2 = v;
+        if(v.get() == v2.get()){
+            std::cout << "third pass\n";
+        }
+        else{
+            std::cout << "third failed\n";
+        }
+    }
 
 private:
     int x[5] = {1,2,3,4,5};
@@ -131,4 +148,5 @@ int main(){
     Unit_tests tests;
     tests.frst_test();
     tests.scnd_test();
+    tests.thrd_test();
 }
