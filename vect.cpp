@@ -1,5 +1,7 @@
 #include <complex.h>
 #include <cstddef>
+#include <ctime>
+#include <iomanip>
 #include <iostream>
 #include <cstring>
 
@@ -58,10 +60,10 @@ public:
         m_data = new T [m_capacity];
     }
 
-    T operator[](int index){
+    T& operator[](int index){
         return m_data[index];
     }
-
+    
     void operator=(const Vctr& v){
         if (this != &v){
             delete[] m_data;
@@ -73,7 +75,7 @@ public:
         }
     }
 
-    T get(){
+    const T get() const{
         return *m_data;
     }
 
@@ -98,7 +100,8 @@ private:
         std::cout << "resizing, capacity = " << m_capacity << "\n";
         #endif
         T* new_data = new T [m_capacity];
-        memcpy(new_data, m_data, m_capacity*sizeof(T));
+        std::move(m_data, m_data+m_capacity, new_data); //0.0000236 arithmetics averages for 10 runs in
+        //memcpy(new_data, m_data, m_capacity*sizeof(T)); 0.0000284 arithmetics averages for 10 runs in
         delete[] m_data;
         m_data = nullptr;
         m_data = new_data;
@@ -145,8 +148,14 @@ private:
 };
 
 int main(){
+    clock_t start, end;
+
     Unit_tests tests;
+    start = clock();
     tests.frst_test();
     tests.scnd_test();
     tests.thrd_test();
+    end = clock();
+    double executable_time = double(end - start) / double(CLOCKS_PER_SEC);
+    std::cout << "time taken: " << std::fixed << executable_time << std::setprecision(5) << std::endl;
 }
