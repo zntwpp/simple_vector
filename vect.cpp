@@ -52,6 +52,22 @@ public:
         ++m_arr_size; 
     }
 
+    void delete_elem(int index){
+        int passed_element = 0;
+        T* new_data = new T[--m_arr_size];
+        for(int i = 0; i < m_arr_size+1; ++i){
+            if(i != index){
+                //passed element becomes 1 if m_data[i] equal to e and all element will shift
+                new_data[i-passed_element] = m_data[i];
+            }
+            else{
+                ++passed_element;
+            }
+        }
+        delete[] m_data;
+        m_data = new_data;
+    }
+
     void clear(){
         m_capacity = 1;
         m_arr_size = 0;
@@ -100,8 +116,7 @@ private:
         std::cout << "resizing, capacity = " << m_capacity << "\n";
         #endif
         T* new_data = new T [m_capacity];
-        std::move(m_data, m_data+m_capacity, new_data); //0.0000236 arithmetics averages for 10 runs in
-        //memcpy(new_data, m_data, m_capacity*sizeof(T)); 0.0000284 arithmetics averages for 10 runs in
+        std::move(m_data, m_data+m_capacity, new_data); 
         delete[] m_data;
         m_data = nullptr;
         m_data = new_data;
@@ -141,6 +156,17 @@ public:
             std::cout << "third failed\n";
         }
     }
+    void four_test()
+    {
+        v.add_elem(111);
+        v.delete_elem(0);
+        if(v[0] == 8 && v[1] == 111){
+            std::cout << "four passed\n";
+        }
+        else{
+            std::cout << "four failed\n";
+        }
+    }
 
 private:
     int x[5] = {1,2,3,4,5};
@@ -155,6 +181,7 @@ int main(){
     tests.frst_test();
     tests.scnd_test();
     tests.thrd_test();
+    tests.four_test();
     end = clock();
     double executable_time = double(end - start) / double(CLOCKS_PER_SEC);
     std::cout << "time taken: " << std::fixed << executable_time << std::setprecision(5) << std::endl;
