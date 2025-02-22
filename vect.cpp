@@ -4,6 +4,7 @@
 #include <iomanip>
 #include <iostream>
 #include <cstring>
+#include <utility>
 
 //#define DEBUG_VCTR
 
@@ -68,6 +69,18 @@ public:
         m_data = new_data;
     }
 
+    void sort(){
+        for (int i = 0; i < m_arr_size; ++i){
+            for(int j = 0; j < m_arr_size; ++j){
+                if(m_data[j] > m_data[j+1]){
+                    //add_elem(add_rvalue_elem too) is adding element to the end of the array
+                    add_rvalue_elem(std::move(m_data[j]));
+                    delete_elem(j);
+                }
+            }
+        }
+    }
+
     void clear(){
         m_capacity = 1;
         m_arr_size = 0;
@@ -129,7 +142,7 @@ public:
         v.add_elem(9);
         v.add_elem(8);
         if(v[5] == 9 && v[6] == 8){
-            std::cout << "first pass\n";
+            std::cout << "first passed\n";
         }
         else{
             std::cout << "first failed\n";
@@ -140,7 +153,7 @@ public:
         v.add_rvalue_elem(5);
         v.add_rvalue_elem(8);
         if(v[0] == 5 && v[1] == 8){
-            std::cout << "second pass\n";
+            std::cout << "second passed\n";
         }
         else{
             std::cout << "second failed\n";
@@ -150,7 +163,7 @@ public:
         Vctr<int> v2;
         v2 = v;
         if(v.get() == v2.get()){
-            std::cout << "third pass\n";
+            std::cout << "third passed\n";
         }
         else{
             std::cout << "third failed\n";
@@ -165,6 +178,21 @@ public:
         }
         else{
             std::cout << "four failed\n";
+        }
+    }
+    void five_test(){
+        Vctr<int> nums;
+        nums.add_elem(2);
+        nums.add_elem(73);
+        nums.add_elem(4);
+        nums.add_elem(1);
+        nums.add_elem(-48);
+        nums.sort();
+        if(nums[0] == -48 && nums[5] == 73){
+            std::cout << "five passed\n";
+        }
+        else{
+            std::cout << "five failed\n";
         }
     }
 
@@ -182,6 +210,7 @@ int main(){
     tests.scnd_test();
     tests.thrd_test();
     tests.four_test();
+    tests.five_test();
     end = clock();
     double executable_time = double(end - start) / double(CLOCKS_PER_SEC);
     std::cout << "time taken: " << std::fixed << executable_time << std::setprecision(5) << std::endl;
