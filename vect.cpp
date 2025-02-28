@@ -53,8 +53,8 @@ public:
         ++m_arr_size; 
     }
 
-    void delete_elem(int index){
-        int passed_element = 0;
+    void delete_elem_by_index(int index){
+        bool passed_element = 0;
         T* new_data = new T[--m_arr_size];
         for(int i = 0; i < m_arr_size+1; ++i){
             if(i != index){
@@ -62,9 +62,26 @@ public:
                 new_data[i-passed_element] = m_data[i];
             }
             else{
+                passed_element=1;
+            }
+        }
+        delete[] m_data;
+        m_data = new_data;
+    }
+
+    void delete_elem(T e){
+        int passed_element = 0;
+        T* new_data = new T[m_arr_size];
+        for(int i = 0; i < m_arr_size; ++i){
+            if(m_data[i] != e){
+                //passed element becomes 1 if m_data[i] equal to e and all element will shift
+                new_data[i-passed_element] = m_data[i];
+            }
+            else{
                 ++passed_element;
             }
         }
+        m_arr_size -= passed_element;
         delete[] m_data;
         m_data = new_data;
     }
@@ -75,7 +92,7 @@ public:
                 if(m_data[j] > m_data[j+1]){
                     //add_elem(add_rvalue_elem too) is adding element to the end of the array
                     add_rvalue_elem(std::move(m_data[j]));
-                    delete_elem(j);
+                    delete_elem_by_index(j);
                 }
             }
         }
@@ -172,7 +189,7 @@ public:
     void four_test()
     {
         v.add_elem(111);
-        v.delete_elem(0);
+        v.delete_elem_by_index(0);
         if(v[0] == 8 && v[1] == 111){
             std::cout << "four passed\n";
         }
@@ -195,6 +212,19 @@ public:
             std::cout << "five failed\n";
         }
     }
+    void six_test(){
+        Vctr<bool> b;
+        b.add_elem(1);
+        b.add_elem(1);
+        b.add_elem(0);
+        b.delete_elem(1);
+        if(b.get_size() == 1){
+            std::cout << "six passed\n";
+        }
+        else{
+            std::cout << "six failed\n";
+        }
+    }
 
 private:
     int x[5] = {1,2,3,4,5};
@@ -211,6 +241,7 @@ int main(){
     tests.thrd_test();
     tests.four_test();
     tests.five_test();
+    tests.six_test();
     end = clock();
     double executable_time = double(end - start) / double(CLOCKS_PER_SEC);
     std::cout << "time taken: " << std::fixed << executable_time << std::setprecision(5) << std::endl;
